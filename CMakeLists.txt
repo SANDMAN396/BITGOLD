@@ -26,9 +26,9 @@ get_directory_property(precious_variables CACHE_VARIABLES)
 #=============================
 # Project / Package metadata
 #=============================
-set(CLIENT_NAME "Bitcoin Core")
-set(CLIENT_VERSION_MAJOR 32)
-set(CLIENT_VERSION_MINOR 99)
+set(CLIENT_NAME "BitGold Core")
+set(CLIENT_VERSION_MAJOR 1)
+set(CLIENT_VERSION_MINOR 0)
 set(CLIENT_VERSION_BUILD 0)
 set(CLIENT_VERSION_RC 0)
 set(CLIENT_VERSION_IS_RELEASE "false")
@@ -50,9 +50,10 @@ set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
   CMAKE_CXX_LINK_EXECUTABLE
 )
 
-project(BitcoinCore
+project(BitGoldCore
   VERSION ${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_BUILD}
-  DESCRIPTION "Bitcoin client software"
+  DESCRIPTION "BitGold client software"
+  # Upstream project's homepage; BitGold has no homepage yet.
   HOMEPAGE_URL "https://bitcoincore.org/"
   LANGUAGES NONE
 )
@@ -100,26 +101,26 @@ endif()
 #=============================
 include(CMakeDependentOption)
 # When adding a new option, end the <help_text> with a full stop for consistency.
-option(BUILD_BITCOIN_BIN "Build bitcoin executable." ON)
-option(BUILD_DAEMON "Build bitcoind executable." ON)
-option(BUILD_GUI "Build bitcoin-qt executable." OFF)
-option(BUILD_CLI "Build bitcoin-cli executable." ON)
+option(BUILD_BITCOIN_BIN "Build bitgold executable." ON)
+option(BUILD_DAEMON "Build bitgoldd executable." ON)
+option(BUILD_GUI "Build bitgold-qt executable." OFF)
+option(BUILD_CLI "Build bitgold-cli executable." ON)
 
 option(BUILD_TESTS "Build test_bitcoin and other unit test executables." ON)
-option(BUILD_TX "Build bitcoin-tx executable." ${BUILD_TESTS})
-option(BUILD_UTIL "Build bitcoin-util executable." ${BUILD_TESTS})
+option(BUILD_TX "Build bitgold-tx executable." ${BUILD_TESTS})
+option(BUILD_UTIL "Build bitgold-util executable." ${BUILD_TESTS})
 cmake_dependent_option(BUILD_GUI_TESTS "Build test_bitcoin-qt executable." ON "BUILD_GUI;BUILD_TESTS" OFF)
 
-option(BUILD_UTIL_CHAINSTATE "Build experimental bitcoin-chainstate executable." OFF)
+option(BUILD_UTIL_CHAINSTATE "Build experimental bitgold-chainstate executable." OFF)
 option(BUILD_KERNEL_LIB "Build experimental bitcoinkernel library." ${BUILD_UTIL_CHAINSTATE})
 cmake_dependent_option(BUILD_KERNEL_TEST "Build tests for the experimental bitcoinkernel library." ON "BUILD_KERNEL_LIB" OFF)
 
 option(ENABLE_WALLET "Enable wallet." ON)
-cmake_dependent_option(BUILD_WALLET_TOOL "Build bitcoin-wallet tool." ${BUILD_TESTS} "ENABLE_WALLET" OFF)
+cmake_dependent_option(BUILD_WALLET_TOOL "Build bitgold-wallet tool." ${BUILD_TESTS} "ENABLE_WALLET" OFF)
 
 option(ENABLE_EXTERNAL_SIGNER "Enable external signer support." ON)
 option(WITH_ZMQ "Enable ZMQ notifications." OFF)
-cmake_dependent_option(ENABLE_IPC "Build multiprocess bitcoin-node and bitcoin-gui executables in addition to monolithic bitcoind and bitcoin-qt executables." ON "NOT WIN32" OFF)
+cmake_dependent_option(ENABLE_IPC "Build multiprocess bitgold-node and bitgold-gui executables in addition to monolithic bitgoldd and bitgold-qt executables." ON "NOT WIN32" OFF)
 cmake_dependent_option(WITH_EXTERNAL_LIBMULTIPROCESS "Build with external libmultiprocess library instead of with local git subtree when ENABLE_IPC is enabled. This is not normally recommended, but can be useful for developing libmultiprocess itself." OFF "ENABLE_IPC" OFF)
 option(WITH_EMBEDDED_ASMAP "Embed default ASMap data." ON)
 option(WITH_USDT "Enable tracepoints for Userspace, Statically Defined Tracing." OFF)

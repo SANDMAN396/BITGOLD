@@ -164,25 +164,25 @@ if(ENABLE_WALLET)
   add_subdirectory(wallet)
 
   if(BUILD_WALLET_TOOL)
-    add_executable(bitcoin-wallet
+    add_executable(bitgold-wallet
       bitcoin-wallet.cpp
       bitcoin-wallet-res.rc
       init/bitcoin-wallet.cpp
       wallet/wallettool.cpp
     )
-    add_windows_application_manifest(bitcoin-wallet)
-    target_link_libraries(bitcoin-wallet
+    add_windows_application_manifest(bitgold-wallet)
+    target_link_libraries(bitgold-wallet
       core_interface
       bitcoin_wallet
       bitcoin_common
       bitcoin_util
     )
-    install_binary_component(bitcoin-wallet HAS_MANPAGE)
+    install_binary_component(bitgold-wallet HAS_MANPAGE)
   endif()
 endif()
 
 
-# P2P and RPC server functionality used by `bitcoind` and `bitcoin-qt` executables.
+# P2P and RPC server functionality used by `bitgoldd` and `bitgold-qt` executables.
 add_library(bitcoin_node STATIC EXCLUDE_FROM_ALL
   addrdb.cpp
   addrman.cpp
@@ -307,42 +307,42 @@ endif()
 
 # Bitcoin wrapper executable that can call other executables.
 if(BUILD_BITCOIN_BIN)
-  add_executable(bitcoin
+  add_executable(bitgold
     bitcoin.cpp
     bitcoin-res.rc
   )
-  add_windows_application_manifest(bitcoin)
-  target_link_libraries(bitcoin core_interface bitcoin_common bitcoin_util)
-  install_binary_component(bitcoin HAS_MANPAGE)
+  add_windows_application_manifest(bitgold)
+  target_link_libraries(bitgold core_interface bitcoin_common bitcoin_util)
+  install_binary_component(bitgold HAS_MANPAGE)
 endif()
 
 # Bitcoin Core bitcoind.
 if(BUILD_DAEMON)
-  add_executable(bitcoind
+  add_executable(bitgoldd
     bitcoind.cpp
     bitcoind-res.rc
     init/bitcoind.cpp
   )
-  add_windows_application_manifest(bitcoind)
-  target_link_libraries(bitcoind
+  add_windows_application_manifest(bitgoldd)
+  target_link_libraries(bitgoldd
     core_interface
     bitcoin_node
     $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
   )
-  install_binary_component(bitcoind HAS_MANPAGE)
+  install_binary_component(bitgoldd HAS_MANPAGE)
 endif()
 if(ENABLE_IPC AND BUILD_DAEMON)
-  add_executable(bitcoin-node
+  add_executable(bitgold-node
     bitcoind.cpp
     init/bitcoin-node.cpp
   )
-  target_link_libraries(bitcoin-node
+  target_link_libraries(bitgold-node
     core_interface
     bitcoin_node
     bitcoin_ipc
     $<TARGET_NAME_IF_EXISTS:bitcoin_wallet>
   )
-  install_binary_component(bitcoin-node INTERNAL)
+  install_binary_component(bitgold-node INTERNAL)
 endif()
 
 
@@ -359,52 +359,52 @@ target_link_libraries(bitcoin_cli
 
 # Bitcoin Core RPC client
 if(BUILD_CLI)
-  add_executable(bitcoin-cli
+  add_executable(bitgold-cli
     bitcoin-cli.cpp
     bitcoin-cli-res.rc
     init/basic.cpp
   )
-  add_windows_application_manifest(bitcoin-cli)
-  target_link_libraries(bitcoin-cli
+  add_windows_application_manifest(bitgold-cli)
+  target_link_libraries(bitgold-cli
     core_interface
     bitcoin_cli
     bitcoin_common
     bitcoin_ipc
     bitcoin_util
   )
-  install_binary_component(bitcoin-cli HAS_MANPAGE)
+  install_binary_component(bitgold-cli HAS_MANPAGE)
 endif()
 
 
 if(BUILD_TX)
-  add_executable(bitcoin-tx
+  add_executable(bitgold-tx
     bitcoin-tx.cpp
     bitcoin-tx-res.rc
   )
-  add_windows_application_manifest(bitcoin-tx)
-  target_link_libraries(bitcoin-tx
+  add_windows_application_manifest(bitgold-tx)
+  target_link_libraries(bitgold-tx
     core_interface
     bitcoin_common
     bitcoin_util
     univalue
   )
-  install_binary_component(bitcoin-tx HAS_MANPAGE)
+  install_binary_component(bitgold-tx HAS_MANPAGE)
 endif()
 
 
 if(BUILD_UTIL)
-  add_executable(bitcoin-util
+  add_executable(bitgold-util
     bitcoin-util.cpp
     bitcoin-util-res.rc
   )
-  add_windows_application_manifest(bitcoin-util)
-  target_link_libraries(bitcoin-util
+  add_windows_application_manifest(bitgold-util)
+  target_link_libraries(bitgold-util
     core_interface
     bitcoin_common
     bitcoin_util
     univalue
   )
-  install_binary_component(bitcoin-util HAS_MANPAGE)
+  install_binary_component(bitgold-util HAS_MANPAGE)
 endif()
 
 
@@ -419,16 +419,16 @@ if(BUILD_KERNEL_LIB)
     add_subdirectory(test/kernel)
   endif()
   if(BUILD_UTIL_CHAINSTATE)
-    add_executable(bitcoin-chainstate
+    add_executable(bitgold-chainstate
       bitcoin-chainstate.cpp
     )
-    add_windows_application_manifest(bitcoin-chainstate)
-    target_link_libraries(bitcoin-chainstate
+    add_windows_application_manifest(bitgold-chainstate)
+    target_link_libraries(bitgold-chainstate
       PRIVATE
         core_interface
         bitcoinkernel
     )
-    install_binary_component(bitcoin-chainstate INTERNAL)
+    install_binary_component(bitgold-chainstate INTERNAL)
   endif()
 endif()
 

@@ -255,36 +255,36 @@ endif()
 
 add_subdirectory(locale)
 
-add_executable(bitcoin-qt WIN32
+add_executable(bitgold-qt WIN32
   main.cpp
   res/bitcoin-qt-res.rc
   ../init/bitcoin-qt.cpp
 )
 
-add_windows_application_manifest(bitcoin-qt)
+add_windows_application_manifest(bitgold-qt)
 
-target_link_libraries(bitcoin-qt
+target_link_libraries(bitgold-qt
   core_interface
   bitcoinqt
   bitcoin_node
 )
 
-import_plugins(bitcoin-qt)
-install_binary_component(bitcoin-qt HAS_MANPAGE)
+import_plugins(bitgold-qt)
+install_binary_component(bitgold-qt HAS_MANPAGE)
 
 if(ENABLE_IPC)
-  add_executable(bitcoin-gui WIN32
+  add_executable(bitgold-gui WIN32
     main.cpp
     ../init/bitcoin-gui.cpp
   )
-  target_link_libraries(bitcoin-gui
+  target_link_libraries(bitgold-gui
     core_interface
     bitcoinqt
     bitcoin_node
     bitcoin_ipc
   )
-  import_plugins(bitcoin-gui)
-  install_binary_component(bitcoin-gui INTERNAL)
+  import_plugins(bitgold-gui)
+  install_binary_component(bitgold-gui INTERNAL)
 endif()
 
 if(BUILD_GUI_TESTS)

@@ -547,7 +547,7 @@ static RPCMethod getaddednodeinfo()
                             {
                                 {RPCResult::Type::OBJ, "", "",
                                 {
-                                    {RPCResult::Type::STR, "address", "The bitcoin server IP and port we're connected to"},
+                                    {RPCResult::Type::STR, "address", "The bitgold server IP and port we're connected to"},
                                     {RPCResult::Type::STR, "connected", "connection, inbound or outbound"},
                                 }},
                             }},

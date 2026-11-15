@@ -42,7 +42,7 @@ const QString BITCOIN_IPC_PREFIX("bitcoin:");
 //
 static QString ipcServerName()
 {
-    QString name("BitcoinQt");
+    QString name("BitGoldQt");
 
     // Append a simple hash of the datadir
     // Note that gArgs.GetDataDirNet() returns a different path

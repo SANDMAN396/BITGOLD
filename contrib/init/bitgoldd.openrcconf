@@ -1,0 +1,33 @@
+# /etc/conf.d/bitgoldd: config file for /etc/init.d/bitgoldd
+
+# Config file location
+#BITGOLDD_CONFIGFILE="/etc/bitgold/bitgold.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITGOLDD_USER)
+#BITGOLDD_PIDDIR="/var/run/bitgoldd"
+
+# What filename to give the pidfile
+#BITGOLDD_PIDFILE="${BITGOLDD_PIDDIR}/bitgoldd.pid"
+
+# Where to write bitgoldd data (be mindful that the blockchain is large)
+#BITGOLDD_DATADIR="/var/lib/bitgoldd"
+
+# User and group to own bitgoldd process
+#BITGOLDD_USER="bitgold"
+#BITGOLDD_GROUP="bitgold"
+
+# Path to bitgoldd executable
+#BITGOLDD_BIN="/usr/bin/bitgoldd"
+
+# Nice value to run bitgoldd under
+#BITGOLDD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#BITGOLDD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for bitgoldd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+BITGOLDD_SIGTERM_TIMEOUT=600

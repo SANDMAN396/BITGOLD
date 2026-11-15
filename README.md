@@ -1,3 +1,52 @@
+# BitGold Core
+
+**BitGold is a fork of [Bitcoin Core](https://github.com/bitcoin/bitcoin)
+(v32.1, merged forward onto upstream master 2026-11-13) — Satoshi Nakamoto's Bitcoin system, mirrored exactly, as its own
+standalone chain.** Same consensus rules (21M cap, 50-coin starting reward,
+halving every 210,000 blocks, difficulty retarget every 2,016 blocks,
+10-minute blocks, double SHA-256 proof of work), same transaction format,
+same validation. Only the identity changes: the name (BitGold / BITGOLD),
+a new genesis block, and network parameters (magic bytes, ports, address
+prefixes) so BitGold can never be confused with Bitcoin.
+
+See [BITGOLD_CHAIN.md](BITGOLD_CHAIN.md) for every parameter changed,
+the genesis block, and how to build and run a local regtest chain.
+
+BitGold Core is released under the MIT license (see [COPYING](COPYING)).
+Attribution to Satoshi Nakamoto and the Bitcoin Core developers is kept
+throughout; the original Bitcoin Core README follows below.
+
+## Status
+
+Phase 1 is done and proven locally: the fork builds, two nodes peered on a
+private regtest network, 151 blocks mined, a 10 BITGOLD payment sent and
+confirmed, and the reward halving verified. There is **no public network
+yet, no real funds, and no launch date**. Nothing here is ready for
+mainnet use. See [BITGOLD_CHAIN.md](BITGOLD_CHAIN.md) for what remains.
+
+## How to help
+
+Help is welcome — always with security first. The best places to start:
+
+- **Test transactions** — run the regtest steps in
+  [BITGOLD_CHAIN.md](BITGOLD_CHAIN.md), send test payments, and report
+  what breaks. Test money only, never real funds.
+- **Mining** — mine regtest blocks, try the CPU miner path, and help
+  work out fair, honest mining guidance for a future public testnet.
+- **Seed nodes** — help design the seed-node and DNS-seed setup so a
+  public network can bootstrap itself one day.
+- **Tests & GUI** — the test suite still needs a rebrand pass (8 files
+  expect Bitcoin's values), and the GUI still shows Bitcoin's artwork.
+- **Security review** — read the rebrand diff (96 files vs Bitcoin
+  Core v32.1) and report problems privately, never in a public issue —
+  see [SECURITY.md](SECURITY.md).
+
+Open an [issue](../../issues) to pick up a task or propose one, and keep
+every discussion honest about the status above: local proof only, no
+launch yet.
+
+---
+
 Bitcoin Core integration/staging tree
 =====================================
 

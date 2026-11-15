@@ -60,15 +60,17 @@ static CBlock CreateGenesisBlock(const char* pszTimestamp, const CScript& genesi
  * transaction cannot be spent since it did not originally exist in the
  * database.
  *
- * CBlock(hash=000000000019d6, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=4a5e1e, nTime=1231006505, nBits=1d00ffff, nNonce=2083236893, vtx=1)
- *   CTransaction(hash=4a5e1e, ver=1, vin.size=1, vout.size=1, nLockTime=0)
- *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d0104455468652054696d65732030332f4a616e2f32303039204368616e63656c6c6f72206f6e206272696e6b206f66207365636f6e64206261696c6f757420666f722062616e6b73)
+ * BitGold mainnet genesis block (mined 2026-11-15; message is the day's
+ * real headline, in the spirit of Satoshi's Times headline):
+ * CBlock(hash=00000000ff64, ver=1, hashPrevBlock=00000000000000, hashMerkleRoot=e79fd8, nTime=1794724824, nBits=1d00ffff, nNonce=1403313620, vtx=1)
+ *   CTransaction(hash=e79fd8, ver=1, vin.size=1, vout.size=1, nLockTime=0)
+ *     CTxIn(COutPoint(000000, -1), coinbase 04ffff001d01044a31352f4e6f762f3230323620555320666c69676874732067726f756e64656420666f7220686f75727320616674657220616972207472616666696320636f6e74726f6c206f7574616765)
  *     CTxOut(nValue=50.00000000, scriptPubKey=0x5F1DF16B2B704C8A578D0B)
- *   vMerkleTree: 4a5e1e
+ *   vMerkleTree: e79fd8
  */
 static CBlock CreateGenesisBlock(uint32_t nTime, uint32_t nNonce, uint32_t nBits, int32_t nVersion, const CAmount& genesisReward)
 {
-    const char* pszTimestamp = "The Times 03/Jan/2009 Chancellor on brink of second bailout for banks";
+    const char* pszTimestamp = "15/Nov/2026 US flights grounded for hours after air traffic control outage";
     const CScript genesisOutputScript = CScript() << "04678afdb0fe5548271967f1a67130b7105cd6a828e03909a67962e0ea1f61deb649f6bc3f4cef38c4f35504e51ec112de5c384df7ba0b8d578a4c702b6bf11d5f"_hex << OP_CHECKSIG;
     return CreateGenesisBlock(pszTimestamp, genesisOutputScript, nTime, nNonce, nBits, nVersion, genesisReward);
 }
@@ -116,13 +118,18 @@ public:
             uint256{"00000000000002dc756eebf4f49723ed8d30cc28a5f108eb94b1ba88ac4f9c22"}, SCRIPT_VERIFY_NONE);
         consensus.script_flag_exceptions.emplace( // Taproot exception
             uint256{"0000000000000000000f14c35b2d841e986ab5441de8c585d5ffe55ea1e395ad"}, SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_WITNESS);
-        consensus.BIP34Height = 227931;
-        consensus.BIP34Hash = uint256{"000000000000024b89b42a942fe0d9fea3bb44ab7bd1b19115dd6a759c0808b8"};
-        consensus.BIP65Height = 388381; // 000000000000000004c2b624ed5d7756c508d90fd0da2c7c679febfa6c4735f0
-        consensus.BIP66Height = 363725; // 00000000000000000379eaa19dce8c9b722d46ae6a57c2f1a988119488b50931
-        consensus.CSVHeight = 419328; // 000000000000000004a1b34462cb8aeebd5799177f7a29cf28f2d1961716b5b5
-        consensus.SegwitHeight = 481824; // 0000000000000000001c8018d9cb3b742ef25114f27563e3fc4a1902167f9893
-        consensus.MinBIP9WarningHeight = 711648; // taproot activation height + miner confirmation window
+        // BitGold is a new chain with no pre-activation history, so the buried
+        // deployments are active from the start — the same pattern Bitcoin Core
+        // itself uses for a new chain (see testnet4). The rules are identical;
+        // only the activation heights differ, because there are no blocks
+        // before them on this chain.
+        consensus.BIP34Height = 1;
+        consensus.BIP34Hash = uint256{};
+        consensus.BIP65Height = 1;
+        consensus.BIP66Height = 1;
+        consensus.CSVHeight = 1;
+        consensus.SegwitHeight = 1;
+        consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256{"00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 10 * 60;
@@ -138,99 +145,65 @@ public:
 
         ApplyDeploymentOptions(opts.dep_opts);
 
-        consensus.nMinimumChainWork = uint256{"000000000000000000000000000000000000000145ec036acc5ba740052af1a0"};
-        consensus.defaultAssumeValid = uint256{"00000000000000000000748969ec33043c0e52a763c6dd5193861f559f2c72e3"}; // 966143
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
          * The characters are rarely used upper ASCII, not valid as UTF-8, and produce
          * a large 32-bit integer with any alignment.
          */
-        pchMessageStart[0] = 0xf9;
-        pchMessageStart[1] = 0xbe;
-        pchMessageStart[2] = 0xb4;
-        pchMessageStart[3] = 0xd9;
-        nDefaultPort = 8333;
+        pchMessageStart[0] = 0x31;
+        pchMessageStart[1] = 0x20;
+        pchMessageStart[2] = 0xe9;
+        pchMessageStart[3] = 0x70;
+        nDefaultPort = 28333;
         nPruneAfterHeight = 100000;
-        m_assumed_blockchain_size = 897;
-        m_assumed_chain_state_size = 14;
+        m_assumed_blockchain_size = 0;
+        m_assumed_chain_state_size = 0;
 
-        genesis = CreateGenesisBlock(1231006505, 2083236893, 0x1d00ffff, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1794724824, 1403313620, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"00000000ff64546f2fd9b68319581cc411e075cb1a4d4df84380d00a6d25a5a1"});
+        assert(genesis.hashMerkleRoot == uint256{"e79fd87366b69d64f6d2b6e39e8cd7052c2866bb730ee91c44951d258fd602d6"});
 
         // Note that of those which support the service bits prefix, most only support a subset of
         // possible options.
         // This is fine at runtime as we'll fall back to using them as an addrfetch if they don't support the
         // service bits we want, but we should get them updated to support all service bits wanted by any
         // release ASAP to avoid it where possible.
-        vSeeds.emplace_back("dnsseed.bluematt.me."); // Matt Corallo, only supports x9
-        vSeeds.emplace_back("seed.bitcoin.jonasschnelli.ch."); // Jonas Schnelli, only supports x1, x5, x9, and xd
-        vSeeds.emplace_back("seed.btc.petertodd.net."); // Peter Todd, only supports x1, x5, x9, and xd
-        vSeeds.emplace_back("seed.bitcoin.sprovoost.nl."); // Sjors Provoost
-        vSeeds.emplace_back("dnsseed.emzy.de."); // Stephan Oeste
-        vSeeds.emplace_back("seed.bitcoin.wiz.biz."); // Jason Maurice
-        vSeeds.emplace_back("seed.mainnet.achownodes.xyz."); // Ava Chow, only supports x1, x5, x9, x49, x809, x849, xd, x400, x404, x408, x448, xc08, xc48, x40c
+        // BitGold has no DNS seeds yet. Peers must be added explicitly
+        // (addnode / connect) until seed infrastructure exists.
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,0);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,128);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xB2, 0x1E};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xAD, 0xE4};
+        // BitGold addresses start with 'B' (P2PKH) and 'G' (P2SH); WIF keys
+        // start with 'B'. None of these can be confused with Bitcoin's.
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,25);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,38);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,70);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x88, 0xC2, 0x1E};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x88, 0xCD, 0xE4};
 
-        bech32_hrp = "bc";
-        silent_payments_hrp = "sp";
+        bech32_hrp = "bg";
+        silent_payments_hrp = "bsp";
 
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_main), std::end(chainparams_seed_main));
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
 
-        m_assumeutxo_data = {
-            {
-                .height = 840'000,
-                .hash_serialized = AssumeutxoHash{uint256{"a2a5521b1b5ab65f67818e5e8eccabb7171a517f9e2382208f77687310768f96"}},
-                .m_chain_tx_count = 991032194,
-                .blockhash = uint256{"0000000000000000000320283a032748cef8227873ff4872689bf23f1cda83a5"},
-            },
-            {
-                .height = 880'000,
-                .hash_serialized = AssumeutxoHash{uint256{"dbd190983eaf433ef7c15f78a278ae42c00ef52e0fd2a54953782175fbadcea9"}},
-                .m_chain_tx_count = 1145604538,
-                .blockhash = uint256{"000000000000000000010b17283c3c400507969a9c2afd1dcf2082ec5cca2880"},
-            },
-            {
-                .height = 910'000,
-                .hash_serialized = AssumeutxoHash{uint256{"4daf8a17b4902498c5787966a2b51c613acdab5df5db73f196fa59a4da2f1568"}},
-                .m_chain_tx_count = 1226586151,
-                .blockhash = uint256{"0000000000000000000108970acb9522ffd516eae17acddcb1bd16469194a821"},
-            },
-            {
-                .height = 935'000,
-                .hash_serialized = AssumeutxoHash{uint256{"e4b90ef9eae834f56c4b64d2d50143cee10ad87994c614d7d04125e2a6025050"}},
-                .m_chain_tx_count = 1305397408,
-                .blockhash = uint256{"0000000000000000000147034958af1652b2b91bba607beacc5e72a56f0fb5ee"},
-            },
-            {
-                .height = 965'000,
-                .hash_serialized = AssumeutxoHash{uint256{"4a8d794337118c0c615b574f817c7306c687584a537184b8d233df42bf477ec2"}},
-                .m_chain_tx_count = 1429611231,
-                .blockhash = uint256{"00000000000000000001595977e6000ce56129f5c9b4073e31ccc30b90b97da9"},
-            }
-        };
+        m_assumeutxo_data = {}; // No UTXO snapshots exist for BitGold yet.
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 4096 00000000000000000000748969ec33043c0e52a763c6dd5193861f559f2c72e3
-            .nTime    = 1788925573,
-            .tx_count = 1434982600,
-            .dTxRate  = 7.851784479579372,
+            .nTime    = 0,
+            .tx_count = 0,
+            .dTxRate  = 0.001,
         };
 
-        // Generated by headerssync-params.py on 2026-09-08.
+        // Same values as regtest (a fresh chain); the Bitcoin values were
+        // generated for Bitcoin's chain size.
         m_headers_sync_params = HeadersSyncParams{
-            .commitment_period = 649,
-            .redownload_buffer_size = 15400, // 15400/649 = ~23.7 commitments
+            .commitment_period = 275,
+            .redownload_buffer_size = 7017, // 7017/275 = ~25.5 commitments
         };
     }
 };
@@ -247,13 +220,14 @@ public:
         consensus.nSubsidyHalvingInterval = 210000;
         consensus.script_flag_exceptions.emplace( // BIP16 exception
             uint256{"00000000dd30457c001f4095d208cc1296b0eed002427aa599874af7a432b105"}, SCRIPT_VERIFY_NONE);
-        consensus.BIP34Height = 21111;
-        consensus.BIP34Hash = uint256{"0000000023b3a96d3484e5abb3755c413e7d41500f8e2a5c3f0dd01299cd8ef8"};
-        consensus.BIP65Height = 581885; // 00000000007f6655f22f98e72ed80d8b06dc761d5da09df0fa1dc4be4f861eb6
-        consensus.BIP66Height = 330776; // 000000002104c8c45e99a8853285a3b592602a3ccde2b832481da85e9e4ba182
-        consensus.CSVHeight = 770112; // 00000000025e930139bac5c6c31a403776da130831ab85be56578f3fa75369bb
-        consensus.SegwitHeight = 834624; // 00000000002b980fcd729daaa248fd9316a5200e9b367f4ff2c42453e84201ca
-        consensus.MinBIP9WarningHeight = 2013984; // taproot activation height + miner confirmation window
+        // New chain: buried deployments active from the start (see mainnet).
+        consensus.BIP34Height = 1;
+        consensus.BIP34Hash = uint256{};
+        consensus.BIP65Height = 1;
+        consensus.BIP66Height = 1;
+        consensus.CSVHeight = 1;
+        consensus.SegwitHeight = 1;
+        consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256{"00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
         consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
         consensus.nPowTargetSpacing = 10 * 60;
@@ -269,77 +243,55 @@ public:
 
         ApplyDeploymentOptions(opts.dep_opts);
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000017f49f702147f10c0eb6"};
-        consensus.defaultAssumeValid = uint256{"00000000b318a3703d14a844c55ef507f4c2fc8f8766e24271fd43c180c51637"}; // 5128859
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
 
-        pchMessageStart[0] = 0x0b;
-        pchMessageStart[1] = 0x11;
-        pchMessageStart[2] = 0x09;
-        pchMessageStart[3] = 0x07;
-        nDefaultPort = 18333;
+        pchMessageStart[0] = 0xc7;
+        pchMessageStart[1] = 0x53;
+        pchMessageStart[2] = 0xdb;
+        pchMessageStart[3] = 0xd1;
+        nDefaultPort = 28343;
         nPruneAfterHeight = 1000;
-        m_assumed_blockchain_size = 245;
-        m_assumed_chain_state_size = 19;
+        m_assumed_blockchain_size = 0;
+        m_assumed_chain_state_size = 0;
 
-        genesis = CreateGenesisBlock(1296688602, 414098458, 0x1d00ffff, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1794724884, 3011183091, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"0000000007f55d05faae8a36c7afb0d24f432473a7b4c82e6ce413f5ca7c868b"});
+        assert(genesis.hashMerkleRoot == uint256{"e79fd87366b69d64f6d2b6e39e8cd7052c2866bb730ee91c44951d258fd602d6"});
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("testnet-seed.bitcoin.jonasschnelli.ch.");
-        vSeeds.emplace_back("seed.tbtc.petertodd.net.");
-        vSeeds.emplace_back("testnet-seed.bluematt.me."); // Just a static list of stable node(s), only supports x9
-        vSeeds.emplace_back("seed.testnet.achownodes.xyz."); // Ava Chow, only supports x1, x5, x9, x49, x809, x849, xd, x400, x404, x408, x448, xc08, xc48, x40c
+        // BitGold has no DNS seeds yet.
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        // BitGold test addresses start with 't' (P2PKH) and 'T' (P2SH).
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,127);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,180);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x97, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x93, 0x94};
 
-        bech32_hrp = "tb";
-        silent_payments_hrp = "tsp";
+        bech32_hrp = "tbg";
+        silent_payments_hrp = "tbsp";
 
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_test), std::end(chainparams_seed_test));
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
 
-        m_assumeutxo_data = {
-            {
-                .height = 2'500'000,
-                .hash_serialized = AssumeutxoHash{uint256{"f841584909f68e47897952345234e37fcd9128cd818f41ee6c3ca68db8071be7"}},
-                .m_chain_tx_count = 66484552,
-                .blockhash = uint256{"0000000000000093bcb68c03a9a168ae252572d348a2eaeba2cdf9231d73206f"},
-            },
-            {
-                .height = 4'840'000,
-                .hash_serialized = AssumeutxoHash{uint256{"ce6bb677bb2ee9789c4a1c9d73e6683c53fc20e8fdbedbdaaf468982a0c8db2a"}},
-                .m_chain_tx_count = 536078574,
-                .blockhash = uint256{"00000000000000f4971a7fb37fbdff89315b69a2e1920c467654a382f0d64786"},
-            },
-            {
-                .height = 5'125'000,
-                .hash_serialized = AssumeutxoHash{uint256{"d05430f34c9b7dd7eb98c0718cdf03782bcce8273847557d68ac2efc1365d4b8"}},
-                .m_chain_tx_count = 536708663,
-                .blockhash = uint256{"00000000000009ad1946e21cb4f1a6323ee99c89017b59d5166472672b868133"},
-            }
-        };
+        m_assumeutxo_data = {}; // No UTXO snapshots exist for BitGold yet.
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 4096 00000000b318a3703d14a844c55ef507f4c2fc8f8766e24271fd43c180c51637
-            .nTime    = 1788932318,
-            .tx_count = 536748780,
-            .dTxRate  = 0.02306697351149596,
+            .nTime    = 0,
+            .tx_count = 0,
+            .dTxRate  = 0.001,
         };
 
-        // Generated by headerssync-params.py on 2026-09-08.
+        // Same values as regtest (a fresh chain); the Bitcoin values were
+        // generated for Bitcoin's chain size.
         m_headers_sync_params = HeadersSyncParams{
-            .commitment_period = 682,
-            .redownload_buffer_size = 14613, // 14613/682 = ~21.4 commitments
+            .commitment_period = 275,
+            .redownload_buffer_size = 7017, // 7017/275 = ~25.5 commitments
         };
     }
 };
@@ -377,83 +329,55 @@ public:
 
         ApplyDeploymentOptions(opts.dep_opts);
 
-        consensus.nMinimumChainWork = uint256{"000000000000000000000000000000000000000000000e346a558455ade8eca9"};
-        consensus.defaultAssumeValid = uint256{"0000000021df65b91665a342e26ceb05e54826ad7d8fcd40316230058fa3b865"}; // 151604
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
 
-        pchMessageStart[0] = 0x1c;
-        pchMessageStart[1] = 0x16;
-        pchMessageStart[2] = 0x3f;
-        pchMessageStart[3] = 0x28;
-        nDefaultPort = 48333;
+        pchMessageStart[0] = 0x22;
+        pchMessageStart[1] = 0x5c;
+        pchMessageStart[2] = 0xad;
+        pchMessageStart[3] = 0xac;
+        nDefaultPort = 28353;
         nPruneAfterHeight = 1000;
-        m_assumed_blockchain_size = 31;
-        m_assumed_chain_state_size = 2;
+        m_assumed_blockchain_size = 0;
+        m_assumed_chain_state_size = 0;
 
-        const char* testnet4_genesis_msg = "03/May/2024 000000000000000000001ebd58c244970b3aa9d783bb001011fbe8ea8e98e00e";
-        const CScript testnet4_genesis_script = CScript() << "000000000000000000000000000000000000000000000000000000000000000000"_hex << OP_CHECKSIG;
-        genesis = CreateGenesisBlock(testnet4_genesis_msg,
-                testnet4_genesis_script,
-                1714777860,
-                393743547,
-                0x1d00ffff,
-                1,
-                50 * COIN);
+        genesis = CreateGenesisBlock(1794724945, 3579803585, 0x1d00ffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"00000000da84f2bafbbc53dee25a72ae507ff4914b867c565be350b0da8bf043"});
-        assert(genesis.hashMerkleRoot == uint256{"7aa0a7ae1e223414cb807e40cd57e667b718e42aaf9306db9102fe28912b7b4e"});
+        assert(consensus.hashGenesisBlock == uint256{"00000000dc1d79e95f7ad14648162d6db59fefccfe0b330f6b26e5bb78ed9dfd"});
+        assert(genesis.hashMerkleRoot == uint256{"e79fd87366b69d64f6d2b6e39e8cd7052c2866bb730ee91c44951d258fd602d6"});
 
         vFixedSeeds.clear();
         vSeeds.clear();
-        // nodes with support for servicebits filtering should be at the top
-        vSeeds.emplace_back("seed.testnet4.bitcoin.sprovoost.nl."); // Sjors Provoost
-        vSeeds.emplace_back("seed.testnet4.wiz.biz."); // Jason Maurice
+        // BitGold has no DNS seeds yet.
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        // BitGold test addresses start with 't' (P2PKH) and 'T' (P2SH).
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,127);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,180);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x97, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x93, 0x94};
 
-        bech32_hrp = "tb";
-        silent_payments_hrp = "tsp";
+        bech32_hrp = "tbg";
+        silent_payments_hrp = "tbsp";
 
         vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_testnet4), std::end(chainparams_seed_testnet4));
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
 
-        m_assumeutxo_data = {
-            {
-                .height = 90'000,
-                .hash_serialized = AssumeutxoHash{uint256{"784fb5e98241de66fdd429f4392155c9e7db5c017148e66e8fdbc95746f8b9b5"}},
-                .m_chain_tx_count = 11347043,
-                .blockhash = uint256{"0000000002ebe8bcda020e0dd6ccfbdfac531d2f6a81457191b99fc2df2dbe3b"},
-            },
-            {
-                .height = 120'000,
-                .hash_serialized = AssumeutxoHash{uint256{"10b05d05ad468d0971162e1b222a4aa66caca89da2bb2a93f8f37fb29c4794b0"}},
-                .m_chain_tx_count = 14141057,
-                .blockhash = uint256{"000000000bd2317e51b3c5794981c35ba894ce27d3e772d5c39ecd9cbce01dc8"},
-            },
-            {
-                .height = 150'000,
-                .hash_serialized = AssumeutxoHash{uint256{"ca068cae50679d7c947454bbe4f0e6aeec1fbe2c6c2735a08bb988623649f950"}},
-                .m_chain_tx_count = 14810011,
-                .blockhash = uint256{"0000000000d9877342754dea8ec1eb24631517d38e3443c370465ee53a8b7434"},
-            }
-        };
+        m_assumeutxo_data = {}; // No UTXO snapshots exist for BitGold yet.
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 4096 0000000021df65b91665a342e26ceb05e54826ad7d8fcd40316230058fa3b865
-            .nTime    = 1788932739,
-            .tx_count = 14825119,
-            .dTxRate  = 0.1148250171344748,
+            .nTime    = 0,
+            .tx_count = 0,
+            .dTxRate  = 0.001,
         };
 
-        // Generated by headerssync-params.py on 2026-09-08.
+        // Same values as regtest (a fresh chain); the Bitcoin values were
+        // generated for Bitcoin's chain size.
         m_headers_sync_params = HeadersSyncParams{
-            .commitment_period = 616,
-            .redownload_buffer_size = 16199, // 16199/616 = ~26.3 commitments
+            .commitment_period = 275,
+            .redownload_buffer_size = 7017, // 7017/275 = ~25.5 commitments
         };
     }
 };
@@ -470,20 +394,19 @@ public:
         vSeeds.clear();
 
         if (!options.challenge) {
-            bin = kernel::SIGNET_DEFAULT_CHALLENGE;
+            // BitGold signet challenge: fresh 2-of-2 multisig (see BITGOLD_CHAIN.md).
+            bin = "5121039b439521942dd9fdf29ff194a72894fd30bbbc7df4a4416b8d909df707b3855521025375720c8e642910a063eb77a0bb8f5a0f4d3e43e0fea97f9b73ba2c4d9bb7ea52ae"_hex_v_u8;
             vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_signet), std::end(chainparams_seed_signet));
-            vSeeds.emplace_back("seed.signet.bitcoin.sprovoost.nl.");
-            vSeeds.emplace_back("seed.signet.achownodes.xyz."); // Ava Chow, only supports x1, x5, x9, x49, x809, x849, xd, x400, x404, x408, x448, xc08, xc48, x40c
+            // BitGold has no DNS seeds yet.
 
-            consensus.nMinimumChainWork = uint256{"00000000000000000000000000000000000000000000000000001090e9dc1520"};
-            consensus.defaultAssumeValid = uint256{"00000002a5e0ba0498f1e9f4591af0b66b63c654665efe65206fd0ae7bbaf923"}; // 321295
-            m_assumed_blockchain_size = 25;
-            m_assumed_chain_state_size = 5;
+            consensus.nMinimumChainWork = uint256{};
+            consensus.defaultAssumeValid = uint256{};
+            m_assumed_blockchain_size = 0;
+            m_assumed_chain_state_size = 0;
             chainTxData = ChainTxData{
-                // Data from RPC: getchaintxstats 4096 00000002a5e0ba0498f1e9f4591af0b66b63c654665efe65206fd0ae7bbaf923
-                .nTime    = 1788925860,
-                .tx_count = 32273793,
-                .dTxRate  = 0.3977566114505673,
+                .nTime    = 0,
+                .tx_count = 0,
+                .dTxRate  = 0.001,
             };
         } else {
             bin = *options.challenge;
@@ -531,51 +454,34 @@ public:
 
         pchMessageStart = kernel::GetSignetMessageStart(consensus.signet_challenge);
 
-        nDefaultPort = 38333;
+        nDefaultPort = 28363;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1598918400, 52613770, 0x1e0377ae, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1794725004, 11714297, 0x1e0377ae, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"00000008819873e925422c1ff0f99f7cc9bbb232af63a077a480a3633bee1ef6"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"000002850eb3cc20c5aeb63709b5091c72f40f1ae88ba22f32d889626310c15c"});
+        assert(genesis.hashMerkleRoot == uint256{"e79fd87366b69d64f6d2b6e39e8cd7052c2866bb730ee91c44951d258fd602d6"});
 
-        m_assumeutxo_data = {
-            {
-                .height = 160'000,
-                .hash_serialized = AssumeutxoHash{uint256{"fe0a44309b74d6b5883d246cb419c6221bcccf0b308c9b59b7d70783dbdf928a"}},
-                .m_chain_tx_count = 2289496,
-                .blockhash = uint256{"0000003ca3c99aff040f2563c2ad8f8ec88bd0fd6b8f0895cfaf1ef90353a62c"},
-            },
-            {
-                .height = 290'000,
-                .hash_serialized = AssumeutxoHash{uint256{"97267e000b4b876800167e71b9123f1529d13b14308abec2888bbd2160d14545"}},
-                .m_chain_tx_count = 28547497,
-                .blockhash = uint256{"0000000577f2741bb30cd9d39d6d71b023afbeb9764f6260786a97969d5c9ac0"},
-            },
-            {
-                .height = 320'000,
-                .hash_serialized = AssumeutxoHash{uint256{"1aaf72ecb376cc16957fbb8d5d406bfd6e3165510e2fc83879b6d14cd20b4462"}},
-                .m_chain_tx_count = 32079110,
-                .blockhash = uint256{"0000000740ae66b284da84387dcfa14d7b1385b0bad482005ba4e770ea6c4b95"},
-            }
-        };
+        m_assumeutxo_data = {}; // No UTXO snapshots exist for BitGold yet.
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        // BitGold test addresses start with 't' (P2PKH) and 'T' (P2SH).
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,127);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,180);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x97, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x93, 0x94};
 
-        bech32_hrp = "tb";
-        silent_payments_hrp = "tsp";
+        bech32_hrp = "tbg";
+        silent_payments_hrp = "tbsp";
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
 
-        // Generated by headerssync-params.py on 2026-09-08.
+        // Same values as regtest (a fresh chain); the Bitcoin values were
+        // generated for Bitcoin's chain size.
         m_headers_sync_params = HeadersSyncParams{
-            .commitment_period = 629,
-            .redownload_buffer_size = 15885, // 15885/629 = ~25.3 commitments
+            .commitment_period = 275,
+            .redownload_buffer_size = 7017, // 7017/275 = ~25.5 commitments
         };
     }
 };
@@ -617,21 +523,21 @@ public:
         consensus.nMinimumChainWork = uint256{};
         consensus.defaultAssumeValid = uint256{};
 
-        pchMessageStart[0] = 0xfa;
-        pchMessageStart[1] = 0xbf;
-        pchMessageStart[2] = 0xb5;
-        pchMessageStart[3] = 0xda;
-        nDefaultPort = 18444;
+        pchMessageStart[0] = 0x31;
+        pchMessageStart[1] = 0x6b;
+        pchMessageStart[2] = 0xfc;
+        pchMessageStart[3] = 0xa4;
+        nDefaultPort = 28373;
         nPruneAfterHeight = opts.fastprune ? 100 : 1000;
         m_assumed_blockchain_size = 0;
         m_assumed_chain_state_size = 0;
 
         ApplyDeploymentOptions(opts.dep_opts);
 
-        genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1794725064, 2, 0x207fffff, 1, 50 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        assert(consensus.hashGenesisBlock == uint256{"0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"});
-        assert(genesis.hashMerkleRoot == uint256{"4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"});
+        assert(consensus.hashGenesisBlock == uint256{"60d9d910c28e59e529a06aea432bfc99520410223536c8fdf6bf59313393cfe5"});
+        assert(genesis.hashMerkleRoot == uint256{"e79fd87366b69d64f6d2b6e39e8cd7052c2866bb730ee91c44951d258fd602d6"});
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();
@@ -640,28 +546,7 @@ public:
         fDefaultConsistencyChecks = true;
         m_is_mockable_chain = true;
 
-        m_assumeutxo_data = {
-            {   // For use by unit tests
-                .height = 110,
-                .hash_serialized = AssumeutxoHash{uint256{"86e9a1205b418b16dde3a18a78c730e30137e28466bda5dbf6b33ab8fc05447c"}},
-                .m_chain_tx_count = 111,
-                .blockhash = uint256{"135eec25a6fb277884e5824e7aa7d052c4868161c99a5122170b5266f86c273d"},
-            },
-            {
-                // For use by fuzz target src/test/fuzz/utxo_snapshot.cpp
-                .height = 200,
-                .hash_serialized = AssumeutxoHash{uint256{"17dcc016d188d16068907cdeb38b75691a118d43053b8cd6a25969419381d13a"}},
-                .m_chain_tx_count = 201,
-                .blockhash = uint256{"385901ccbd69dff6bbd00065d01fb8a9e464dede7cfe0372443884f9b1dcf6b9"},
-            },
-            {
-                // For use by test/functional/feature_assumeutxo.py and test/functional/tool_bitcoin_chainstate.py
-                .height = 299,
-                .hash_serialized = AssumeutxoHash{uint256{"106b2c56233e378a824cf0d5ff2be42ed32c72f1605c9be288d00942908a40ac"}},
-                .m_chain_tx_count = 334,
-                .blockhash = uint256{"0c552ced4721c249a389eb9b08cb8da261cd46f0e7b5f9d064d48f3113406853"},
-            },
-        };
+        m_assumeutxo_data = {}; // No UTXO snapshots exist for BitGold yet.
 
         chainTxData = ChainTxData{
             .nTime = 0,
@@ -669,14 +554,15 @@ public:
             .dTxRate = 0.001, // Set a non-zero rate to make it testable
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        // BitGold test addresses start with 't' (P2PKH) and 'T' (P2SH).
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,127);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,180);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x97, 0xCF};
+        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x93, 0x94};
 
-        bech32_hrp = "bcrt";
-        silent_payments_hrp = "sprt";
+        bech32_hrp = "bgrt";
+        silent_payments_hrp = "bsprt";
 
         // Copied from Testnet4.
         m_headers_sync_params = HeadersSyncParams{

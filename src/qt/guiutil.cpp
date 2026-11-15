@@ -450,7 +450,7 @@ bool openBitcoinConf()
 
     configFile.close();
 
-    /* Open bitcoin.conf with the associated application */
+    /* Open bitgold.conf with the associated application */
     bool res = QDesktopServices::openUrl(QUrl::fromLocalFile(PathToQString(pathConfig)));
 #ifdef Q_OS_MACOS
     // Workaround for macOS-specific behavior; see #15409.
@@ -514,10 +514,10 @@ fs::path static StartupShortcutPath()
 {
     ChainType chain = gArgs.GetChainType();
     if (chain == ChainType::MAIN)
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcoin.lnk";
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "BitGold.lnk";
     if (chain == ChainType::TESTNET) // Remove this special case when testnet CBaseChainParams::DataDir() is incremented to "testnet4"
-        return GetSpecialFolderPath(CSIDL_STARTUP) / "Bitcoin (testnet).lnk";
-    return GetSpecialFolderPath(CSIDL_STARTUP) / fs::u8path(strprintf("Bitcoin (%s).lnk", ChainTypeToString(chain)));
+        return GetSpecialFolderPath(CSIDL_STARTUP) / "BitGold (testnet).lnk";
+    return GetSpecialFolderPath(CSIDL_STARTUP) / fs::u8path(strprintf("BitGold (%s).lnk", ChainTypeToString(chain)));
 }
 
 bool GetStartOnSystemStartup()

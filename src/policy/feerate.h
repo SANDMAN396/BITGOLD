@@ -16,32 +16,32 @@
 #include <string>
 #include <type_traits>
 
-inline const std::string CURRENCY_UNIT = "BTC"; // One formatted unit
-inline const std::string CURRENCY_ATOM = "sat"; // One indivisible minimum value unit
+inline const std::string CURRENCY_UNIT = "BITGOLD"; // One formatted unit
+inline const std::string CURRENCY_ATOM = "grain"; // One indivisible minimum value unit
 
 enum class FeeRateFormat {
     BTC_KVB, //!< Use BTC/kvB fee rate unit
-    SAT_VB,  //!< Use sat/vB fee rate unit
+    SAT_VB,  //!< Use grain/vB fee rate unit
 };
 
 /**
- * Fee rate in satoshis per virtualbyte: CAmount / vB
+ * Fee rate in grains per virtualbyte: CAmount / vB
  * the feerate is represented internally as FeeFrac
  */
 class CFeeRate
 {
 private:
-    /** Fee rate in sats/vB (satoshis per N virtualbytes) */
+    /** Fee rate in grains/vB (grains per N virtualbytes) */
     FeePerVSize m_feerate;
 
 public:
-    /** Fee rate of 0 satoshis per 0 vB */
+    /** Fee rate of 0 grains per 0 vB */
     CFeeRate() = default;
     template<std::integral I> // Disallow silent float -> int conversion
     explicit constexpr CFeeRate(const I m_feerate_kvb) : m_feerate(FeePerVSize(m_feerate_kvb, 1000)) {}
 
     /**
-     * Construct a fee rate from a fee in satoshis and a vsize in vB.
+     * Construct a fee rate from a fee in grains and a vsize in vB.
      *
      * Passing any virtual_bytes less than or equal to 0 will result in 0 fee rate per 0 size.
      */
@@ -56,14 +56,19 @@ public:
      */
     explicit CFeeRate(const FeePerVSize& feerate) : m_feerate{feerate.size > 0 ? feerate : FeePerVSize{}} {}
 
-    /// Return the fee in satoshis for the given vsize in vbytes. (Rounds up)
+    /**
+     * Return the fee in grains for the given vsize in vbytes.
+     * If the calculated fee would have fractional grains, then the
+     * returned fee will always be rounded up to the nearest grain.
+     */
     CAmount GetFee(int32_t virtual_bytes) const;
 
     FeePerVSize GetFeePerVSize() const { return m_feerate; }
 
-    /// Return the fee in satoshis for a vsize of 1000 vbytes. (Rounds down)
+    /**
+     * Return the fee in grains for a vsize of 1000 vbytes
+     */
     CAmount GetFeePerK() const;
-
     friend std::strong_ordering operator<=>(const CFeeRate& a, const CFeeRate& b) noexcept
     {
         return ByRatio{a.m_feerate} <=> ByRatio{b.m_feerate};

@@ -1256,7 +1256,7 @@ public:
     uint32_t GetVersion() const;
 
     /** Merge psbt into this. The two psbts must have the same underlying CTransaction (i.e. the
-      * same actual Bitcoin transaction.) Returns true if the merge succeeded, false otherwise. */
+      * same actual BitGold transaction.) Returns true if the merge succeeded, false otherwise. */
     [[nodiscard]] bool Merge(const PartiallySignedTransaction& psbt);
     /** Merge the global xpubs of psbt into this, keeping the existing origin for an xpub
       * seen again with a different one, as the serialized records are keyed by xpub. */

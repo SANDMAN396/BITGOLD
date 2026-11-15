@@ -9,9 +9,9 @@ System"* (31 October 2008), using Satoshi's code and rules.
 The public branch is the v32.1 rebrand **merged forward onto upstream
 master `a527a007` (2026-11-13)** — same identity changes, plus the new
 upstream work (silent-payments HRPs, signet datadirs, placeholder man
-pages). The local regtest proof below ran on the v32.1 tree; a rebuild
-and re-proof of the merged tree is still pending, so treat the public
-branch as unproven until that check lands.
+pages). The merged tree was rebuilt and re-proven on regtest
+2026-11-15 (same genesis, 151 blocks, 10 BITGOLD test transaction,
+halving at block 150 — see the proof section below).
 
 BitGold is **not** an Ethereum token. The ERC20 BitGold in
 `~/workspace/tokennine/` is only a model. This — `bitgold-core/` — is the
@@ -176,11 +176,16 @@ to the Bitcoin network.**
 
 ```bash
 BIN=bitgold-core/build/src
+mkdir -p node1 node2   # bitgoldd -daemon needs the datadirs to exist
 # Node 1 (datadir ./node1, P2P 28373, RPC 28372)
-$BIN/bitgoldd -regtest -datadir=$PWD/node1 -daemon
+# -fallbackfee is required: a fresh regtest chain has no fee history,
+# so sendtoaddress fails without it ("Fee estimation failed").
+$BIN/bitgoldd -regtest -datadir=$PWD/node1 -fallbackfee=0.00001 -daemon
 # Node 2 (datadir ./node2, P2P 28374, RPC 28375), connected to node 1
 $BIN/bitgoldd -regtest -datadir=$PWD/node2 -port=28374 -rpcport=28375 \
-  -connect=127.0.0.1:28373 -daemon
+  -connect=127.0.0.1:28373 -fallbackfee=0.00001 -daemon
+# NOTE: bitgold-cli does not read the daemon's RPC port from the
+# datadir — node 2 commands below need -rpcport=28375 added.
 
 # Create wallets and mine 101 blocks on node 1 (coinbase matures after 100)
 $BIN/bitgold-cli -regtest -datadir=$PWD/node1 createwallet "miner"
@@ -193,11 +198,11 @@ $BIN/bitgold-cli -regtest -datadir=$PWD/node1 getblockcount
 $BIN/bitgold-cli -regtest -datadir=$PWD/node1 getbalance
 
 # Send from node 1 to node 2 and confirm
-$BIN/bitgold-cli -regtest -datadir=$PWD/node2 createwallet "receiver"
-RADDR=$($BIN/bitgold-cli -regtest -datadir=$PWD/node2 getnewaddress)
+$BIN/bitgold-cli -regtest -datadir=$PWD/node2 -rpcport=28375 createwallet "receiver"
+RADDR=$($BIN/bitgold-cli -regtest -datadir=$PWD/node2 -rpcport=28375 getnewaddress)
 $BIN/bitgold-cli -regtest -datadir=$PWD/node1 sendtoaddress "$RADDR" 10
 $BIN/bitgold-cli -regtest -datadir=$PWD/node1 generatetoaddress 1 "$ADDR"
-$BIN/bitgold-cli -regtest -datadir=$PWD/node2 getbalance   # 10 (after 1 confirmation)
+$BIN/bitgold-cli -regtest -datadir=$PWD/node2 -rpcport=28375 getbalance   # 10 (after 1 confirmation)
 ```
 
 Expected regtest genesis hash: `60d9d910c28e59e529a06aea432bfc99520410223536c8fdf6bf59313393cfe5`.
@@ -248,6 +253,18 @@ were read back from the running chain with `bitgold-cli`:
 The proof chain datadirs are kept at `node1/` and `node2/` (18 MB each).
 Both nodes were stopped cleanly after the proof.
 
+### Re-proof on the merged tree — run 2026-11-15 (local only)
+
+The merged tree (`bitgold-master`, rebrand on upstream master
+`a527a007`) was built from scratch (100%, zero errors) and re-proven
+on fresh regtest datadirs: same regtest genesis
+`60d9d910…3cfe5`, two nodes peered (`/BitGold:1.0.0/`), 151 blocks,
+block 1 coinbase 50.0, 10 BITGOLD test transaction
+(`6245121d66c8bc907123a574d8ad6b28ccd41bdfe16a45cf666592ac97cdab23`,
+node 2 balance 10.00000000 after 1 confirmation), block 149 pays
+50.0 and block 150 pays 25.0. No code fixes were needed — the public
+branch behaves exactly like the v32.1 tree.
+
 ## What remains before any public launch could even be considered
 
 This is a local regtest proof, not a launch. A public BitGold network
@@ -262,8 +279,10 @@ would need, at minimum:
   hardware wallet supports BitGold addresses.
 - **Exchanges and listings** — none, and no ticker is registered
   anywhere.
-- **A public repo + issue tracker** — the fork lives only on this
-  machine; the bug-report URL still points at Bitcoin's tracker.
+- **A public repo + issue tracker** — the repo is public at
+  `SANDMAN396/BITGOLD-` (branch `main`); the issue tracker still needs
+  enabling in repo Settings, and the bug-report URL still points at
+  Bitcoin's tracker.
 - **Security review** — the rebrand touched consensus-adjacent code
   (chainparams, genesis, address prefixes); it needs independent
   review, and the full test suite needs a rebrand pass before it can

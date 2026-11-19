@@ -34,7 +34,7 @@ static inline int PruneMiBtoGB(int64_t mib) { return (mib * 1_MiB + GB_BYTES - 1
  */
 static inline int64_t PruneGBtoMiB(int gb) { return gb * GB_BYTES / 1_MiB; }
 
-/** Interface from Qt to configuration data structure for Bitcoin client.
+/** Interface from Qt to configuration data structure for BitGold client.
    To Qt, the options are presented as a list with the different options
    laid out vertically.
    This can be changed to a tree once the settings become sufficiently

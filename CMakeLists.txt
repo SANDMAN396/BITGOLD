@@ -53,8 +53,8 @@ set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
 project(BitGoldCore
   VERSION ${CLIENT_VERSION_MAJOR}.${CLIENT_VERSION_MINOR}.${CLIENT_VERSION_BUILD}
   DESCRIPTION "BitGold client software"
-  # Upstream project's homepage; BitGold has no homepage yet.
-  HOMEPAGE_URL "https://bitcoincore.org/"
+  # BitGold's public repo (About dialog's "further information" link).
+  HOMEPAGE_URL "https://github.com/SANDMAN396/BITGOLD"
   LANGUAGES NONE
 )
 

@@ -113,7 +113,7 @@ public:
         m_chain_type = ChainType::MAIN;
         consensus.signet_blocks = false;
         consensus.signet_challenge.clear();
-        consensus.nSubsidyHalvingInterval = 210000;
+        consensus.nSubsidyHalvingInterval = 840000; // BitGold Phase 1 fast blocks: 840,000 x 2.5 min ~ 4 years
         consensus.script_flag_exceptions.emplace( // BIP16 exception
             uint256{"00000000000002dc756eebf4f49723ed8d30cc28a5f108eb94b1ba88ac4f9c22"}, SCRIPT_VERIFY_NONE);
         consensus.script_flag_exceptions.emplace( // Taproot exception
@@ -131,8 +131,10 @@ public:
         consensus.SegwitHeight = 1;
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256{"00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
-        consensus.nPowTargetTimespan = 14 * 24 * 60 * 60; // two weeks
-        consensus.nPowTargetSpacing = 10 * 60;
+        // BitGold Phase 1 fast blocks (mainnet only): 2.5-minute blocks, retarget every
+        // 2,016 blocks (~3.5 days) so DifficultyAdjustmentInterval() stays 2,016.
+        consensus.nPowTargetTimespan = 3 * 24 * 60 * 60 + 12 * 60 * 60; // 3.5 days = 302400 s
+        consensus.nPowTargetSpacing = 2 * 60 + 30; // 150 s
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;

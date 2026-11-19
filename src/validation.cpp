@@ -1831,8 +1831,11 @@ CAmount GetBlockSubsidy(int nHeight, const Consensus::Params& consensusParams)
     if (halvings >= 64)
         return 0;
 
-    CAmount nSubsidy = 50 * COIN;
-    // Subsidy is cut in half every 210,000 blocks which will occur approximately every 4 years.
+    // BitGold Phase 1 fast blocks: 12.5 BITGOLD per block (50 / 4), so daily
+    // issuance is unchanged: 576 blocks x 12.5 = 7,200/day, same as 144 x 50.
+    CAmount nSubsidy = 1250000000; // 12.5 * COIN
+    // Subsidy is cut in half every nSubsidyHalvingInterval blocks (840,000 on
+    // mainnet, approximately every 4 years).
     nSubsidy >>= halvings;
     return nSubsidy;
 }

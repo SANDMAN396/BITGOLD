@@ -16,7 +16,8 @@ inline constexpr unsigned int MAX_BLOCK_WEIGHT{4'000'000};
 /** The maximum allowed number of signature check operations in a block (network rule) */
 inline constexpr int64_t MAX_BLOCK_SIGOPS_COST{80'000};
 /** Coinbase transaction outputs can only be spent after this number of new blocks (network rule) */
-inline constexpr int COINBASE_MATURITY = 100;
+// BitGold Phase 1 fast blocks: 400 blocks x 2.5 min ~ 16.7 hours, same wall-clock as Bitcoin's 100 x 10 min.
+inline constexpr int COINBASE_MATURITY = 400;
 
 inline constexpr int WITNESS_SCALE_FACTOR = 4;
 

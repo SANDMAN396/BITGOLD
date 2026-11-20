@@ -1,13 +1,25 @@
-# BitGold Core
 
-**BitGold is a fork of [Bitcoin Core](https://github.com/bitcoin/bitcoin)
-(v32.1, merged forward onto upstream master 2026-11-13) — Satoshi Nakamoto's Bitcoin system, mirrored exactly, as its own
-standalone chain.** Same consensus rules (21M cap, 50-coin starting reward,
-halving every 210,000 blocks, difficulty retarget every 2,016 blocks,
-10-minute blocks, double SHA-256 proof of work), same transaction format,
-same validation. Only the identity changes: the name (BitGold / BITGOLD),
-a new genesis block, and network parameters (magic bytes, ports, address
-prefixes) so BitGold can never be confused with Bitcoin.
+# BitGold Core — Tech9 Blockchain
+
+**Tech9 Blockchain is live.** BitGold Core is a fork of [Bitcoin
+Core](https://github.com/bitcoin/bitcoin) (v32.1, merged forward onto
+upstream master 2026-11-13) — Satoshi Nakamoto's Bitcoin system, as its
+own standalone chain, with faster blocks. Same proof of work (double
+SHA-256), same 21,000,000 cap, same transaction format, same validation.
+The differences: **2.5-minute blocks** (Bitcoin: 10), **12.5 BITGOLD**
+per block (Bitcoin: 50 — daily issuance is unchanged at 7,200),
+**halving every 840,000 blocks** (~4 years), difficulty retarget every
+2,016 blocks (~3.5 days), coinbase maturity 400 blocks (~16.7 hours).
+Plus a new genesis block and network parameters (magic bytes, ports,
+address prefixes) so BitGold can never be confused with Bitcoin.
+
+- Coin: **BITGOLD** — smallest unit the **grain** (1 BITGOLD =
+  100,000,000 grains)
+- Addresses: **B…** (P2PKH), **G…** (P2SH), **bg1…** (bech32)
+- P2P port **28333**, RPC port **28332**
+- Genesis block: `00000000ff64546f2fd9b68319581cc411e075cb1a4d4df84380d00a6d25a5a1`
+  — "15/Nov/2026 US flights grounded for hours after air traffic control
+  outage"
 
 See [BITGOLD_CHAIN.md](BITGOLD_CHAIN.md) for every parameter changed,
 the genesis block, and how to build and run a local regtest chain.
@@ -16,34 +28,74 @@ BitGold Core is released under the MIT license (see [COPYING](COPYING)).
 Attribution to Satoshi Nakamoto and the Bitcoin Core developers is kept
 throughout; the original Bitcoin Core README follows below.
 
-## Status
+## Status: mainnet is LIVE
 
-Phase 1 is done and proven locally: the fork builds, two nodes peered on a
-private regtest network, 151 blocks mined, a 10 BITGOLD payment sent and
-confirmed, and the reward halving verified. There is **no public network
-yet, no real funds, and no launch date**. Nothing here is ready for
-mainnet use. See [BITGOLD_CHAIN.md](BITGOLD_CHAIN.md) for what remains.
+The Tech9 Blockchain mainnet is live. The chain starts at genesis
+with a fair launch: no premine, no reserved coins — every BITGOLD in
+existence is mined, starting from block 1.
+
+**This is a brand-new network.** There is one seed node, no exchanges,
+no listings, and no independent security audit yet. Run a node, mine,
+and use the wallet — but treat it as early software: don't put in more
+than you can afford to lose, and report problems privately (see
+[SECURITY.md](SECURITY.md)).
+
+## Run a node
+
+Build from source (Linux, see [BUILD.md](BUILD.md)):
+
+```bash
+git clone https://github.com/SANDMAN396/BITGOLD.git
+cd BITGOLD
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_GUI=OFF -DBUILD_TESTS=OFF \
+  -DBUILD_BENCH=OFF -DBUILD_FUZZ_BINARY=OFF -DBUILD_TX=ON -DBUILD_UTIL=ON \
+  -DBUILD_WALLET_TOOL=ON -DBUILD_UTIL_CHAINSTATE=OFF -DENABLE_IPC=OFF
+cmake --build build -j$(nproc)
+```
+
+Then connect to the seed node and start syncing:
+
+```bash
+./build/src/bitgoldd -addnode=159.89.239.187 -daemon
+./build/src/bitgold-cli getblockcount
+```
+
+First seed node: `159.89.239.187` (P2P port 28333). More seeds
+will be listed here as the network grows. If you run a node that stays
+up, open an issue and we'll add it.
+
+## Get the wallet
+
+- **Android:** two apps, both in the [v1.0.0 release](../../releases/tag/v1.0.0):
+  **BitGold Miner** (mining + BITGOLD wallet) and **Tech Smart Wallet**
+  (Tech9 tokens — Tech, Dollar, and any token you add). Both come
+  pre-filled with the seed node above. Mining is only in the Miner app;
+  it heats the phone and drains the battery, so plug in while it runs.
+- **Desktop (Linux):** `bitgold-qt` — build with `-DBUILD_GUI=ON`
+  (see [BUILD.md](BUILD.md)). Windows and Mac binaries are coming.
+
+## Mine
+
+At launch, difficulty is 1 — the lowest it can ever be. Any CPU can
+mine, including the phone app's built-in miner. Each block pays **12.5
+BITGOLD**; mined coins mature after 400 blocks (~16.7 hours).
+Difficulty retargets every 2,016 blocks (~3.5 days), so it follows
+hash power quickly as miners join.
 
 ## How to help
 
-Help is welcome — always with security first. The best places to start:
-
-- **Test transactions** — run the regtest steps in
-  [BITGOLD_CHAIN.md](BITGOLD_CHAIN.md), send test payments, and report
-  what breaks. Test money only, never real funds.
-- **Mining** — mine regtest blocks, try the CPU miner path, and help
-  work out fair, honest mining guidance for a future public testnet.
-- **Seed nodes** — help design the seed-node and DNS-seed setup so a
-  public network can bootstrap itself one day.
+- **Run a node** — every node makes the network stronger. Keep it up
+  and we'll list it as a seed.
+- **Mine** — fair launch, lowest difficulty ever, right now.
+- **Test transactions** — send payments, try the wallet, report what
+  breaks (test amounts first).
 - **Tests & GUI** — the test suite still needs a rebrand pass (8 files
-  expect Bitcoin's values), and the GUI still shows Bitcoin's artwork.
-- **Security review** — read the rebrand diff (96 files vs Bitcoin
-  Core v32.1) and report problems privately, never in a public issue —
-  see [SECURITY.md](SECURITY.md).
+  expect Bitcoin's values), and the GUI needs a rebuild on the new
+  block-time parameters.
+- **Security review** — read the code and report problems privately,
+  never in a public issue — see [SECURITY.md](SECURITY.md).
 
-Open an [issue](../../issues) to pick up a task or propose one, and keep
-every discussion honest about the status above: local proof only, no
-launch yet.
+Open an [issue](../../issues) to pick up a task or propose one.
 
 ---
 
